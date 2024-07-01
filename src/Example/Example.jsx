@@ -83,7 +83,7 @@ function App() {
   });
 
   return (
-    <div className="datagrid-example-container">
+    <div className="datagrid-example-container test">
       <p className="intro-text"><CodeSnippet hideCopyButton type="inline">vite</CodeSnippet>starter template</p>
       <Datagrid datagridState={datagridState} />
     </div>
