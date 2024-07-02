@@ -44,7 +44,7 @@ async function run() {
   })[0];
   console.log('matchArtifact', matchArtifact);
 
-  const artifactResponse = await octokit.request('GET /repos/{owner}/{repo}/actions/artifacts/{artifact_id}/{archive_format}', {
+  const artifactResponse = await octokit.request('GET /repos/{owner}/{repo}/actions/artifacts/{artifact_id}/{archive_format}/zip', {
     owner: organization.login,
     repo: repository.name,
     artifact_id: matchArtifact.id,
