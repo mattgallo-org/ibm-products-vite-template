@@ -11,6 +11,7 @@ import github from '@actions/github';
 import core from '@actions/core';
 import { App } from "octokit";
 import util from 'util';
+import decompress from 'decompress';
 
 async function run() {
   const { context } = github;
@@ -56,10 +57,19 @@ async function run() {
 
   // Decode the array buffer from the artifact to read initial review PR data from a privileged workflow
 
-  const convertedBuffer = Buffer.from(artifactResponse.data);
-  console.log('convertedBuffer', convertedBuffer);
+  // Decompress the file
+  const files = await decompress(artifactResponse.data);
+
+  console.log('files', files);
+  // Get the decompressed buffer
+  const decompressedFile = fs.readFileSync(files[0].path);
+  console.log('decompressedFile', decompressedFile);
+
+  // Decode the decompressed buffer
   const decodedArtifact = new util.TextDecoder().decode(convertedBuffer);
   console.log('decodedArtifact', decodedArtifact);
+
+  // Parse decoded buffer
   const parsedDecodedArtifact = JSON.parse(decodedArtifact);
 
   console.log('artifactData: ', parsedDecodedArtifact);
