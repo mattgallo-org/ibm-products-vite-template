@@ -79,7 +79,7 @@ async function run() {
   const parsedDecodedArtifact = JSON.parse(decodedArtifact);
 
   console.log('artifactData: ', parsedDecodedArtifact);
-  const { pull_request: pullRequest, review } = decodedArtifact;
+  const { pull_request: pullRequest, review } = parsedDecodedArtifact;
   const { state: prState, draft } = pullRequest;
     
   // We only want to work with Pull Requests that are marked as open
