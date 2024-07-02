@@ -26,8 +26,6 @@ async function run() {
   const app = new App({ appId, privateKey, });
   const octokit = await app.getInstallationOctokit(52238220);
 
-  // const { pull_request: pullRequest, repository, review, action } = context.payload;
-  // const { state, draft } = pullRequest;
   const { workflow_run, repository, organization } = context.payload;
   const workflowRunId = workflow_run.id;
 
@@ -79,11 +77,11 @@ async function run() {
   const parsedDecodedArtifact = JSON.parse(decodedArtifact);
 
   console.log('artifactData: ', parsedDecodedArtifact);
-  const { pull_request: pullRequest, review } = parsedDecodedArtifact;
-  const { state: prState, draft } = pullRequest;
+  const { pull_request, review } = parsedDecodedArtifact;
+  const { state, draft } = pull_request;
     
   // We only want to work with Pull Requests that are marked as open
-  if (prState !== 'open') {
+  if (state !== 'open') {
     return;
   }
 
@@ -100,7 +98,7 @@ async function run() {
   const { data: allReviews } = await octokit.rest.pulls.listReviews({
     owner: repository.owner.login,
     repo: repository.name,
-    pull_number: pullRequest.number,
+    pull_number: pull_request.number,
     per_page: 100,
   });
 
@@ -175,7 +173,7 @@ async function run() {
   });
 
   if (approved.length > 0) {
-    const hasReadyLabel = pullRequest.labels.find((label) => {
+    const hasReadyLabel = pull_request.labels.find((label) => {
       return label.name === readyForReviewLabel;
     });
     // Remove ready for review label if there is at least one approval
@@ -183,14 +181,14 @@ async function run() {
       await octokit.rest.issues.removeLabel({
         owner: repository.owner.login,
         repo: repository.name,
-        issue_number: pullRequest.number,
+        issue_number: pull_request.number,
         name: readyForReviewLabel,
       });
     }
   }
 
   if (approved.length === 1) {
-    const hasAdditionalReviewLabel = pullRequest.labels.find((label) => {
+    const hasAdditionalReviewLabel = pull_request.labels.find((label) => {
       return label.name === additionalReviewLabel;
     });
     // Add the one more review label if there's at least one approval and it doesn't have the label already
@@ -198,7 +196,7 @@ async function run() {
       await octokit.rest.issues.addLabels({
         owner: repository.owner.login,
         repo: repository.name,
-        issue_number: pullRequest.number,
+        issue_number: pull_request.number,
         labels: [additionalReviewLabel],
       });
     }
@@ -206,7 +204,7 @@ async function run() {
   }
 
   if (approved.length >= 2) {
-    const hasAdditionalReviewLabel = pullRequest.labels.find((label) => {
+    const hasAdditionalReviewLabel = pull_request.labels.find((label) => {
       return label.name === additionalReviewLabel;
     });
     // Remove the one mor review label if there are at least 2 approvals
@@ -214,7 +212,7 @@ async function run() {
       await octokit.rest.issues.removeLabel({
         owner: repository.owner.login,
         repo: repository.name,
-        issue_number: pullRequest.number,
+        issue_number: pull_request.number,
         name: additionalReviewLabel,
       });
     }
