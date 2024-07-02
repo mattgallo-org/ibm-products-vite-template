@@ -66,7 +66,7 @@ async function run() {
   console.log('decompressedFile', decompressedFile);
 
   // Decode the decompressed buffer
-  const decodedArtifact = new util.TextDecoder().decode(convertedBuffer);
+  const decodedArtifact = new util.TextDecoder().decode(decompressedFile);
   console.log('decodedArtifact', decodedArtifact);
 
   // Parse decoded buffer
