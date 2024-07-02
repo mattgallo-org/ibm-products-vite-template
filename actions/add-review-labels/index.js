@@ -44,7 +44,7 @@ async function run() {
   })[0];
   console.log('matchArtifact', matchArtifact);
 
-  const artifactResponse = await octokit.request('GET /repos/{owner}/{repo}/actions/artifacts/{artifact_id}/{archive_format}/zip', {
+  const artifactResponse = await octokit.request('GET /repos/{owner}/{repo}/actions/artifacts/{artifact_id}/{archive_format}', {
     owner: organization.login,
     repo: repository.name,
     artifact_id: matchArtifact.id,
@@ -53,12 +53,17 @@ async function run() {
       'X-GitHub-Api-Version': '2022-11-28'
     }
   });
+
+
   console.log('artifact response: ', artifactResponse);
 
   // Decode the array buffer from the artifact to read initial review PR data from a privileged workflow
 
+  // Convert ArrayBuffer to Buffer
+  const buff = Buffer.from(artifactResponse.data);
+
   // Decompress the file
-  const files = await decompress(artifactResponse.data);
+  const files = await decompress(buff);
 
   console.log('files', files);
   // Get the decompressed buffer
