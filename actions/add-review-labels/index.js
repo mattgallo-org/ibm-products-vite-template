@@ -11,6 +11,7 @@ import github from '@actions/github';
 import core from '@actions/core';
 import { App } from "octokit";
 import util from 'util';
+import * as fs from 'fs';
 import decompress from 'decompress';
 
 async function run() {
