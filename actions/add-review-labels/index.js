@@ -68,11 +68,11 @@ async function run() {
 
   console.log('files', files);
   // Get the decompressed buffer
-  const decompressedFile = fs.readFileSync(files[0].path);
-  console.log('decompressedFile', decompressedFile);
+  // const decompressedFile = fs.readFileSync(files[0].path);
+  // console.log('decompressedFile', decompressedFile);
 
   // Decode the decompressed buffer
-  const decodedArtifact = new util.TextDecoder().decode(decompressedFile);
+  const decodedArtifact = new util.TextDecoder().decode(files[0].data);
   console.log('decodedArtifact', decodedArtifact);
 
   // Parse decoded buffer
