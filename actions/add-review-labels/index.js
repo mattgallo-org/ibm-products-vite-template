@@ -11,7 +11,6 @@ import github from '@actions/github';
 import core from '@actions/core';
 import { App } from "octokit";
 import util from 'util';
-import * as fs from 'fs';
 import decompress from 'decompress';
 
 async function run() {
@@ -66,8 +65,6 @@ async function run() {
 
   console.log('files', files);
   // Get the decompressed buffer
-  // const decompressedFile = fs.readFileSync(files[0].path);
-  // console.log('decompressedFile', decompressedFile);
 
   // Decode the decompressed buffer
   const decodedArtifact = new util.TextDecoder().decode(files[0].data);
@@ -104,8 +101,8 @@ async function run() {
 
   // Get reviewer team data
   const { data } = await octokit.request('GET /orgs/{org}/teams/{team_slug}', {
-    org: 'mattgallo-org',
-    team_slug: 'reviewing-team',
+    org: organization.login,
+    team_slug: 'reviewing-team', // Should be only hardcoded value (outside of the labels) needed within this action. Replace with the appropriate reviewing team that is assigned to review PRs.
     headers: {
       'X-GitHub-Api-Version': '2022-11-28'
     }
@@ -207,7 +204,7 @@ async function run() {
     const hasAdditionalReviewLabel = pull_request.labels.find((label) => {
       return label.name === additionalReviewLabel;
     });
-    // Remove the one mor review label if there are at least 2 approvals
+    // Remove the one more review label if there are at least 2 approvals from the reviewing team
     if (hasAdditionalReviewLabel) {
       await octokit.rest.issues.removeLabel({
         owner: repository.owner.login,
